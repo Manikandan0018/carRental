@@ -11,7 +11,7 @@ export const App = () => {
   return (
     <>
     
-      <Routes>
+      <Routes basename="/carRental">
         <Route path="/" element={<Home cart={cart} setCart={setCart}/>} />
         <Route path="/Signup" element={<Signup/>} />
         <Route path="/cart" element={<Cart cart={cart} setCart={setCart}/>} />
