@@ -1,115 +1,158 @@
-// Cart.jsx
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import ContactForm from './ContactForm';
+import {
+  FaGasPump,
+  FaCogs,
+  FaTachometerAlt,
+  FaTools,
+  FaTrashAlt,
+} from 'react-icons/fa';
 
 export const Cart = ({ cart, setCart }) => {
-  const [daysMap, setDaysMap] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
     const initDays = {};
     cart.forEach((car) => {
-      initDays[car.id] = initDays[car.id] || 1;
+      initDays[car.id] = 1;
     });
-    setDaysMap(initDays);
   }, [cart]);
-
-  const updateDays = (id, delta) => {
-    setDaysMap((prev) => ({
-      ...prev,
-      [id]: Math.max(1, (prev[id] || 1) + delta),
-    }));
-  };
 
   const removeFromCart = (id) => {
     setCart(cart.filter((car) => car.id !== id));
-    setDaysMap((prev) => {
-      const updated = { ...prev };
-      delete updated[id];
-      return updated;
-    });
   };
 
-  const handlePayment = () => {
-    alert("Payment Successful!");
-    setCart([]);
-    setDaysMap({});
-  };
 
-  const perDayPrice = 120;
+
+ 
+
+
+
+ 
 
   return (
-    <div className="p-2">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Your Rented Cars</h2>
+    <div className="p-6 sm:p-10 bg-gradient-to-r from-white to-blue-50 min-h-screen">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+        <h2 className="text-4xl font-bold text-gray-800">Your Rented Cars</h2>
         <button
           onClick={() => navigate('/')}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
         >
-          Home
+          Go to Home
         </button>
       </div>
 
       {cart.length === 0 ? (
-        <p className="text-gray-600 text-lg">No cars added to cart.</p>
+        <div className="text-center text-gray-600 mt-10 text-lg">
+          No cars added yet. Start booking your next ride now!
+        </div>
       ) : (
-        <>
-          <div className="grid lg:w-200 gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1">
-            {cart.map((car) => {
-              const days = daysMap[car.id] || 1;
-              const total = days * perDayPrice;
+        <div className="grid gap-10 lg:grid-cols-2">
+          {/* Left: Car Cards */}
+        <div className="space-y-8">
+  {cart.map((car) => (
+    <div
+      key={car.id}
+      className="bg-white shadow-xl rounded-xl overflow-hidden hover:shadow-2xl transition flex flex-col"
+    >
+      <img
+        src={car.img}
+        alt={car.model}
+        className="w-full h-auto object-contain max-h-[300px] bg-gray-100"
+      />
 
-              return (
-                <div key={car.id} className="border rounded shadow p-4">
-                  <img
-                    src={car.img}
-                    alt={car.model}
-                    className="w-full h-fit object-cover rounded mb-4"
-                  />
-                  <p><strong>Model:</strong> {car.model}</p>
-                  <p><strong>Year:</strong> {car.year}</p>
-                  <p><strong>Engine:</strong> {car.engine}</p>
-                  <p><strong>Top Speed:</strong> {car.horsepower} mph</p>
-
-                  <div className="flex items-center gap-2 mt-3">
-                    <button
-                      onClick={() => updateDays(car.id, -1)}
-                      className="bg-gray-300 px-2 py-1 rounded"
-                    >-</button>
-                    <span>{days} day(s)</span>
-                    <button
-                      onClick={() => updateDays(car.id, 1)}
-                      className="bg-gray-300 px-2 py-1 rounded"
-                    >+</button>
-                  </div>
-
-                  <p className="mt-2 text-lg font-semibold text-blue-600">Total: ${total}</p>
-
-                  <button
-                    onClick={() => removeFromCart(car.id)}
-                    className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  >
-                    Remove
-                  </button>
-                </div>
-              );
-            })}
+      <div className="p-5 flex flex-col justify-between space-y-3">
+        <div>
+          <h3 className="text-2xl font-semibold mb-2 text-blue-800">
+            {car.model}
+          </h3>
+          <div className="grid grid-cols-2 gap-3 text-gray-700 text-sm">
+            <div className="flex items-center gap-2">
+              <FaTachometerAlt className="text-blue-500" />
+              <span>Top Speed: {car.horsepower} mph</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaCogs className="text-blue-500" />
+              <span>Transmission: {car.gear || 'Automatic'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaTools className="text-blue-500" />
+              <span>Engine: {car.engine}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaGasPump className="text-blue-500" />
+              <span>Fuel Type: {car.fuel || 'Petrol'}</span>
+            </div>
           </div>
+        </div>
 
-          <div className="mt-8 text-right">
-            <p className="text-xl font-bold">
-              Grand Total: $
-              {cart.reduce((acc, car) => acc + (daysMap[car.id] || 1) * perDayPrice, 0)}
-            </p>
-            <button
-              onClick={handlePayment}
-              className="mt-2 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-            >
-              Pay Now
-            </button>
+        <div className="mt-4 border-t pt-3">
+          <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+            <li>Free cancellation up to 24 hours</li>
+            <li>Unlimited mileage</li>
+            <li>Roadside assistance included</li>
+          </ul>
+        </div>
+
+        <button
+          onClick={() => removeFromCart(car.id)}
+          className="mt-4 w-full flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+        >
+          <FaTrashAlt /> cancel Rent </button>
+      </div>
+    </div>
+  ))}
+</div>
+
+          {/* Right: Contact Form */}
+          <div className="bg-white rounded-xl shadow-lg p-6 h-fit">
+            <h3 className="text-3xl font-bold mb-4 text-gray-800 text-center">
+              Complete Your Booking
+            </h3>
+            <ContactForm />
           </div>
-        </>
+        </div>
       )}
+
+      {/* Why Choose Us Section */}
+      <div className="mt-20 bg-white rounded-xl p-6 shadow-md">
+        <h4 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+          Why Choose Us?
+        </h4>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 text-gray-700">
+          <div className="bg-blue-100 p-4 rounded-lg shadow-sm">
+            <h5 className="font-semibold mb-2">Affordable Pricing</h5>
+            <p>No hidden fees. Pay only for what you rent.</p>
+          </div>
+          <div className="bg-blue-100 p-4 rounded-lg shadow-sm">
+            <h5 className="font-semibold mb-2">Wide Selection</h5>
+            <p>From SUVs to sedans – choose what suits your trip.</p>
+          </div>
+          <div className="bg-blue-100 p-4 rounded-lg shadow-sm">
+            <h5 className="font-semibold mb-2">24/7 Support</h5>
+            <p>Our team is here for you around the clock.</p>
+          </div>
+          <div className="bg-blue-100 p-4 rounded-lg shadow-sm">
+            <h5 className="font-semibold mb-2">Easy Booking</h5>
+            <p>Simple and fast car rental experience.</p>
+          </div>
+          <div className="bg-blue-100 p-4 rounded-lg shadow-sm">
+            <h5 className="font-semibold mb-2">Flexible Durations</h5>
+            <p>Rent by the day, week, or month — your choice!</p>
+          </div>
+          <div className="bg-blue-100 p-4 rounded-lg shadow-sm">
+            <h5 className="font-semibold mb-2">Well-Maintained Vehicles</h5>
+            <p>Clean, safe, and regularly serviced cars.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
+};
+
+Cart.propTypes = {
+  cart: PropTypes.array.isRequired,
+  setCart: PropTypes.func.isRequired,
 };
